@@ -1,6 +1,6 @@
 <script setup>
 // Projects/Show.vue
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
  
@@ -10,6 +10,9 @@ defineProps({
   project: Object,
   stats: Object,
 })
+
+const page = usePage()
+const isAdmin = page.props.auth.user?.role === 'admin'
  
 const deleteProject = (project) => {
   if (confirm(`Delete project "${project.name}"? This will remove all its bugs.`)) {
@@ -27,10 +30,18 @@ const deleteProject = (project) => {
         <Link :href="route('projects.index')" class="back-link">← Projects</Link>
         <h1 class="page-title">{{ project.name }}</h1>
         <p class="page-subtitle">{{ project.description }}</p>
+        <div class="visibility-badge">
+          <span :class="['badge', project.is_public ? 'badge--public' : 'badge--private']">
+            {{ project.is_public ? 'Public' : 'Private' }}
+          </span>
+        </div>
       </div>
       <div class="project-actions">
         <Link :href="route('projects.bugs.create', project.id)" class="btn-primary">
           + Report Bug
+        </Link>
+        <Link v-if="isAdmin" :href="route('projects.edit', project.id)" class="btn-secondary">
+          Edit Visibility
         </Link>
         <button class="btn-danger" @click="deleteProject(project)">Delete</button>
       </div>
@@ -104,3 +115,27 @@ const deleteProject = (project) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.visibility-badge {
+  margin-top: 0.75rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge--private {
+  background-color: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+}
+
+.badge--public {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+</style>

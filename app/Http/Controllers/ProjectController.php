@@ -71,4 +71,26 @@ class ProjectController extends Controller
             ->route('projects.index')
             ->with('success', 'Project deleted.');
     }
+
+    public function edit(Project $project): Response
+    {
+        $this->authorize('update', $project);
+
+        return Inertia::render('Projects/Edit', [
+            'project' => $project,
+        ]);
+    }
+
+    public function update(Project $project)
+    {
+        $this->authorize('update', $project);
+
+        $project->update([
+            'is_public' => request()->boolean('is_public'),
+        ]);
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', 'Project visibility updated successfully.');
+    }
 }

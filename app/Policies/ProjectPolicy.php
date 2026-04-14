@@ -20,7 +20,8 @@ class ProjectPolicy
         return $project->is_public
             || $project->owner_id === $user->id
             || $user->role === 'admin'
-            || $project->members()->where('user_id', $user->id)->exists();
+            || $project->members()->where('user_id', $user->id)->exists()
+            || $project->bugs()->where('assignee_id', $user->id)->exists();
     }
  
     public function create(User $user): bool
@@ -31,5 +32,10 @@ class ProjectPolicy
     public function delete(User $user, Project $project): bool
     {
         return $user->role === 'admin' || $project->owner_id === $user->id;
+    }
+
+    public function update(User $user, Project $project): bool
+    {
+        return $user->role === 'admin';
     }
 }

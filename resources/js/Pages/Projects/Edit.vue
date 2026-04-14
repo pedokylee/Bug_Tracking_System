@@ -1,49 +1,36 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import FormInput from '@/Components/Form/Input.vue'
- 
-defineOptions({ layout: AppLayout })
- 
-const form = useForm({
-  name: '',
-  description: '',
-  is_public: false,
+
+const props = defineProps({
+  project: Object,
 })
- 
+
+defineOptions({ layout: AppLayout })
+
+const form = useForm({
+  is_public: props.project.is_public,
+})
+
 const submit = () => {
-  form.post(route('projects.store'))
+  form.put(route('projects.update', props.project.id))
 }
 </script>
- 
+
 <template>
-  <Head title="New Project" />
- 
+  <Head title="Edit Project" />
+
   <div class="form-page">
     <div class="form-page-header">
-      <Link :href="route('projects.index')" class="back-link">← Projects</Link>
-      <h1 class="page-title">New Project</h1>
+      <Link :href="route('projects.show', project.id)" class="back-link">← {{ project.name }}</Link>
+      <h1 class="page-title">Edit Project Visibility</h1>
     </div>
- 
+
     <form class="bug-form" @submit.prevent="submit">
       <div class="form-section">
-        <FormInput
-          v-model="form.name"
-          label="Project Name"
-          placeholder="e.g. E-Commerce Platform"
-          :error="form.errors.name"
-          required
-        />
- 
-        <div class="form-field">
-          <label class="form-label">Description</label>
-          <textarea
-            v-model="form.description"
-            class="form-textarea"
-            placeholder="Brief description of this project..."
-            rows="3"
-          ></textarea>
-          <p v-if="form.errors.description" class="form-error">{{ form.errors.description }}</p>
+        <div class="project-info">
+          <h3>{{ project.name }}</h3>
+          <p>{{ project.description }}</p>
         </div>
 
         <div class="form-field">
@@ -77,11 +64,11 @@ const submit = () => {
           <p v-if="form.errors.is_public" class="form-error">{{ form.errors.is_public }}</p>
         </div>
       </div>
- 
+
       <div class="form-actions">
-        <Link :href="route('projects.index')" class="btn-secondary">Cancel</Link>
+        <Link :href="route('projects.show', project.id)" class="btn-secondary">Cancel</Link>
         <button type="submit" class="btn-primary" :disabled="form.processing">
-          {{ form.processing ? 'Creating...' : 'Create Project' }}
+          {{ form.processing ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
     </form>
@@ -89,6 +76,23 @@ const submit = () => {
 </template>
 
 <style scoped>
+.project-info {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.project-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.project-info p {
+  margin: 0;
+  color: #9ca3af;
+}
+
 .visibility-options {
   display: flex;
   gap: 1.5rem;
@@ -129,12 +133,5 @@ const submit = () => {
 .option-hint {
   font-size: 0.875rem;
   color: #9ca3af;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: nowrap;
 }
 </style>

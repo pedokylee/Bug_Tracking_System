@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Projects Routes
     Route::resource('projects', ProjectController::class)->only([
-        'index', 'show', 'create', 'store', 'destroy'
+        'index', 'show', 'create', 'store', 'edit', 'update', 'destroy'
     ]);
 
     // Bugs Routes (nested under projects)
